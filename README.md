@@ -5,6 +5,9 @@ with MKS compatible gcode.
 
 It is not like it was really well tested, but it works with Prusa Slicer 2.5.2 and Flying Bear Ghost 6.
 
+And now with `rembg` inside, exe got really fat. 
+Is replacing background with configurable solid color required - no. Will I add it - yes, just for fun.
+
 ## Usage
 
 ### Printer settings
@@ -29,3 +32,10 @@ Use `-b <color>` or `--bg-color <color>` to specify background color for preview
 Demo:
 
 ![Remove background demo](https://github.com/vlad-d-markin/mks_preview_prusa/raw/main/screenshots/remove_bg_demo.png)
+
+## Development how-to's
+Building exe:
+```
+pyinstaller --onefile mks_preview_prusa.py
+pyinstaller --onefile mks_preview_prusa_rembg.py
+```
