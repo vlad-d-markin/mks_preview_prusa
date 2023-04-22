@@ -3,8 +3,8 @@ import base64
 import re
 from os.path import exists
 from io import BytesIO
-from PIL import Image  # pip install pillow
-from typing import List
+from PIL import Image, ImageColor  # pip install pillow
+from rembg import remove
 
 
 def rgb2tft(r, g, b):
@@ -31,11 +31,14 @@ def generate_tft(img: Image):
     return res
 
 
-def convert_prusa_thumb_to_tft(prusa_gcode: str) -> List:
+def convert_prusa_thumb_to_tft(prusa_gcode, bg_color=None):
     s_pattern = (
         "(; thumbnail begin )([0-9]+)(x)([0-9]+) ([0-9]+)\n(.*?)(?=; thumbnail end)"
     )
     pattern = re.compile(s_pattern, re.M | re.I | re.S)
+
+    if bg_color:
+        bg_color = (*ImageColor.getrgb(bg_color), 255)
 
     tft_gcode = []
 
@@ -52,13 +55,16 @@ def convert_prusa_thumb_to_tft(prusa_gcode: str) -> List:
         image = Image.open(stream).convert("RGB")
         # TODO remove debug save
         # image.save(f"{th_width}x{th_height}.png", "PNG")
+        if bg_color:
+            image = remove(image, bgcolor=bg_color).convert("RGB")
+            # image.save(f"{th_width}x{th_height}_no_bg.png", "PNG")
         stream.close()
         tft_gcode.append(generate_tft(image))
 
     return tft_gcode
 
 
-def replace_thumbs(prusa_gcode: str, tft_gcode: List):
+def replace_thumbs(prusa_gcode: str, tft_gcode):
     s_pattern = f"; thumbnail begin .*; thumbnail end"
     if len(tft_gcode) > 0:
         tft_gcode = "\n".join(tft_gcode) + "\n"
@@ -73,7 +79,7 @@ def replace_thumbs(prusa_gcode: str, tft_gcode: List):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="MKS Preview for Prusa",
-        description="Post processing tool to convert Prusa Slicer generated PNG thumbnails to MKS gcode",
+        description="Post processing tool to convert Prusa Slicer generated PNG thumbnails to MKS gcode. Can replace background with help of rembg library.",
     )
     parser.add_argument("filename")
     parser.add_argument(
@@ -83,6 +89,12 @@ if __name__ == "__main__":
         help="Remove thumbnails from gcode. Reduces file size.",
         default=False,
     )
+    parser.add_argument(
+        "--bg-color",
+        "-b",
+        help="Color to replace background with. Valid values: PIL.ImageColor.getrgb()",
+        default=None
+    )
     args = parser.parse_args()
 
     with open(args.filename) as original_gcode_file:
@@ -90,7 +102,7 @@ if __name__ == "__main__":
         if args.cut_thumbs:
             tft_thumbs = []
         else:
-            tft_thumbs = convert_prusa_thumb_to_tft(prusa_gcode)
+            tft_thumbs = convert_prusa_thumb_to_tft(prusa_gcode, bg_color=args.bg_color)
         prusa_gcode = replace_thumbs(prusa_gcode, tft_thumbs)
 
     with open(args.filename, "w") as out_gcode_file:
