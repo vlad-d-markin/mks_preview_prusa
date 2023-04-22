@@ -12,10 +12,20 @@ It is not like it was really well tested, but it works with Prusa Slicer 2.5.2 a
 Thumbnails size: `100x100, 200x200`<br>
 Thumbnails format: `PNG`
 
-![Priner settings screenshot](https://github.com/vlad-d-markin/mks_preview_prusa/blob/645a72b8c0a7a30fc8b2078aa30a0dedd28cb9de/screenshots/printer_settings.png)
+![Priner settings screenshot](https://github.com/vlad-d-markin/mks_preview_prusa/raw/main/screenshots/printer_settings.png)
 
 ### Post processing settings
 
 Specify path to `mks_preview_prusa.exe`<br>
 
-![Post processing settings screenshot](https://github.com/vlad-d-markin/mks_preview_prusa/blob/645a72b8c0a7a30fc8b2078aa30a0dedd28cb9de/screenshots/post_processing_settings.png)
+![Post processing settings screenshot](https://github.com/vlad-d-markin/mks_preview_prusa/raw/main/screenshots/post_processing_settings.png)
+
+### Remove background
+
+Use `-b <color>` or `--bg-color <color>` to specify background color for preview.
+
+![Remove background settings screenshot](https://github.com/vlad-d-markin/mks_preview_prusa/raw/main/screenshots/remove_bg_settings.png)
+
+Demo:
+
+![Remove background demo](https://github.com/vlad-d-markin/mks_preview_prusa/raw/main/screenshots/remove_bg_demo.png)
